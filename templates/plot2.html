@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive Live Updating Graph</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #e9ecef;
+            color: #333;
+        }
+        nav {
+
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 0px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            background-size: cover;
+            background-position: center;
+            border-bottom: 2px solid #c72092;
+                
+        }
+
+
+        nav .logo{
+            font-size: 15px;
+            color: #c72092;
+            margin: 0px 0;
+            cursor: pointer;
+            position: relative;
+            
+        }
+
+        nav .logo span{
+            color: #6c14d0;
+            text-decoration: underline;
+        }
+
+        nav ul {
+            margin-left: 250px;
+            list-style-type: none;
+            
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 5px 15px;
+        }
+
+        nav ul li a {
+            color: #333;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #c72092;
+        }
+
+        nav #profile {
+            display: flex;
+            align-items: center;
+            margin-left: auto; /* Pushes the profile section to the right */
+            padding: 10px; /* Adjust padding if needed */
+        }
+        nav #profile img {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        nav #profile h4 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100vh; 
+        }
+
+        .features {
+            flex: 0.25; 
+            padding: 20px;
+            background-color: #ffffff;
+            border-right: 2px solid #dee2e6;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            transition: all 0.3s;
+        }
+
+        .features h2 {
+            margin-top: 0;
+            font-weight: 700;
+            color: #007bff;
+        }
+
+        .features label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .features input,
+        .features select,
+        .features button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .features input:focus,
+        .features select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .features button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .features button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .features button:active {
+            transform: translateY(0);
+        }
+
+        /* Submit Section Container */
+        .submit-section {
+            border: 1px solid #ced4da; /* Light gray border */
+            border-radius: 8px; /* Rounded corners */
+            padding: 20px; /* Padding inside the box */
+            background-color: #f8f9fa; /* Light background color */
+            margin-top: 20px; /* Space above the section */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        }
+
+        /* Heading for Submit Section */
+        .submit-section h2 {
+            margin: 0; /* Remove default margins */
+            font-size: 1.5rem; /* Larger font size for emphasis */
+            color: #007bff; /* New color for the heading */
+            text-align: center; /* Center the text */
+        }
+
+        /* Submit button styling */
+        #submit-button {
+            background-color: #28a745; /* Green color to signify action */
+            color: white; /* White text color */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            padding: 15px 20px; /* More padding for a larger button */
+            cursor: pointer; /* Pointer cursor for button */
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Transition for background color and transform */
+            font-size: 1rem; /* Larger font size for emphasis */
+            margin-top: 10px; /* Reduced margin to bring it closer to the heading */
+            width: 100%; /* Full width to match the sidebar */
+        }
+
+        /* Hover effect for submit button */
+        #submit-button:hover {
+            background-color: #218838; /* Darker green on hover */
+            transform: translateY(-2px); /* Slight lift on hover */
+        }
+
+        /* Active state for submit button */
+        #submit-button:active {
+            transform: translateY(0); /* Reset position when active */
+        }
+
+
+        .graph {
+            flex: 0.75; 
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #graph {
+            width: 100%;
+            height: 100%;
+        }
+        .message-box {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 50%; /* Center the box */
+            top: 50%; /* Center the box */
+            transform: translate(-50%, -50%); /* Adjust position */
+            padding: 20px;
+            background-color: #fff; /* White background */
+            border: 1px solid #ced4da; /* Light border */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow */
+            width: 350px; /* Set width */
+            text-align: center; /* Center text */
+            transition: all 0.3s ease; /* Smooth transition for appearance */
+        }
+
+        .close-button {
+            cursor: pointer; /* Pointer cursor for close button */
+            color: #dc3545; /* Red color for close */
+            float: right; /* Float to the right */
+            font-size: 20px; /* Larger font for close button */
+        }
+
+        h2 {
+            color: #333; /* Darker text color for headings */
+            font-size: 1.5rem; /* Font size for headings */
+        }
+
+        p {
+            color: #555; /* Slightly darker for text */
+            margin: 10px 0; /* Margin for spacing */
+            line-height: 1.5; /* Line height for readability */
+        }
+
+        button {
+            background-color: #007bff; /* Bootstrap primary color */
+            color: white; /* White text color */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            padding: 10px 15px; /* Padding for button */
+            cursor: pointer; /* Pointer cursor for button */
+            transition: background-color 0.3s ease; /* Transition for background color */
+            margin-top: 10px; /* Margin on top */
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <h1>Graph<span>s</span></h1>
+        </div>
+
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/plot">Visuals</a></li>
+            <li><a href="/upload">Data Entry</a></li>
+            <li><a href="#Review">Review</a></li>
+            <li><a href="#Servises">Services</a></li>
+        </ul>
+        <div id="profile">
+            <img src="https://via.placeholder.com/50" alt="User Profile">
+            {% if session['name'] %}
+            <p><strong>{{ session['name'] }}</strong></p>
+            {% else %}
+                <p>Welcome, Guest</p>
+            {% endif %}
+        </div>
+
+    </nav>
+    <div class="container">
+        <div class="features">
+            <h2>Graph Features</h2>
+
+            <label for="graph_type">Select Graph Type:</label>
+            <select id="graph_type" name="graph_type">
+                <option value="scatter">Scatter</option>
+                <option value="line">Line</option>
+                <option value="bar">Bar</option>
+                <option value="pie">Pie</option>
+                <option value="histogram">Histogram</option>
+                <option value="boxplot">Box Plot</option>
+                <option value="errorbars">Error Bars</option>
+                <option value="heatmap">Heatmap</option>
+                <option value="violin">Violin Plot</option>
+            </select>
+
+            <label for="graph_subtype">Select Graph Subtype:</label>
+            <select id="graph_subtype" name="graph_subtype">
+                <!-- This will be populated dynamically based on the selected graph type -->
+            </select>
+
+            <label for="x_feature">Select X Feature:</label>
+            <select id="x_feature" name="x_feature">
+                <!-- Options will be dynamically populated -->
+            </select>
+
+            <label for="y_feature">Select Y Feature:</label>
+            <select id="y_feature" name="y_feature">
+                <!-- Options will be dynamically populated -->
+            </select>
+
+            <label for="z_feature" id="z_feature_label">Select Z Feature (for Grouping):</label>
+            <select id="z_feature" name="z_feature">
+                <!-- Options will be dynamically populated -->
+            </select>
+
+            <label for="color">Select Color:</label>
+            <input type="color" id="color" name="color" value="#007bff">
+
+            <label for="marker_size">Marker Size:</label>
+            <input type="number" id="marker_size" name="marker_size" value="10" min="1" max="20">
+
+            <label for="show_grid">Show Grid:</label>
+            <select id="show_grid" name="show_grid">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+
+            <button id="update-button">Update Graph</button>
+
+
+            <div class="submit-section">
+                <h2>Submit Graph</h2>
+                <button id="submit-button" class="btn btn-success mt-5">Submit and Save Graph</button>
+            </div>
+        </div>
+
+        
+
+        <div class="graph">
+            <div id="graph"></div>
+        </div>
+
+        
+
+        <div class="message-box" id="message-box">
+            <span class="close-button" id="close-message">&times;</span>
+            <p id="message-content"></p>
+        </div>
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            // Fetch the available columns (features) from the /get_data endpoint
+            $('#submit-button').prop('disabled', true);
+            $.ajax({
+                url: '/gett_data',
+                type: 'GET',
+                success: function(data) {
+                    var columns = data.columns;  // Assuming columns are returned in this structure
+
+                    // Populate the feature dropdowns with the column names
+                    var xFeatureDropdown = $('#x_feature');
+                    var yFeatureDropdown = $('#y_feature');
+                    var zFeatureDropdown = $('#z_feature'); // For Z feature
+
+                    columns.forEach(function(column) {
+                        var option = $('<option></option>').attr('value', column).text(column);
+                        xFeatureDropdown.append(option.clone());
+                        yFeatureDropdown.append(option.clone());
+                        zFeatureDropdown.append(option.clone()); // Populate Z dropdown
+                    });
+                },
+                error: function() {
+                    alert('Failed to load available features.');
+                }
+            });
+
+            var graphDescriptions = {
+                scatter: "Scatter plots display the relationship between two numerical features. Choose two numerical features.",
+                line: "Line graphs are used to show trends over time or ordered categories. Choose a numerical feature for Y, and a categorical or numerical feature for X.",
+                bar: "Bar charts are used to compare quantities across different categories. Use a categorical feature for X and a numerical feature for Y.",
+                pie: "Pie charts display the proportions of a whole. Choose a categorical feature for Y that represents different categories.",
+                histogram: "Histograms show the distribution of a numerical feature. Choose a numerical feature.",
+                boxplot: "Box plots summarize the distribution of a numerical feature through their quartiles. Choose a numerical feature for Y, and optionally, a categorical feature for X.",
+                errorbars: "Error bars show the variability of data and are used with both X and Y numerical features.",
+                heatmap: "Heatmaps show the relationship between two features with color coding. Choose all three features X,Y and Z as numerical features.",
+                violin: "Violin plots are similar to box plots but show the distribution shape of the data. Choose a numerical feature for Y."
+            };
+
+
+            var graphSubtypes = {
+                scatter: ['Bubble Scatter', 'Regular Scatter'],
+                line: ['Smooth Line', 'Dashed Line'],
+                bar: ['Bar Graph','Stacked Bar', 'Grouped Bar', 'Horizontal Bar'],
+                pie: [],  // No subtypes for pie
+                histogram: ['Standard Histogram'],
+                boxplot: ['Vertical Box', 'Horizontal Box' , 'Grouped Box'],
+                errorbars: ['Error Bars X', 'Error Bars Y'],
+                heatmap: ['Standard Heatmap'],
+                violin: ['Single Violin', 'Multiple Violin']
+            };
+
+            
+            
+            $('#graph_type').change(function() {
+                var graphType = $(this).val();
+                var subtypeDropdown = $('#graph_subtype');
+                subtypeDropdown.empty();  // Clear existing options
+
+                // Populate the subtype dropdown based on the selected graph type
+                if (graphType in graphSubtypes) {
+                    graphSubtypes[graphType].forEach(function(subtype) {
+                        subtypeDropdown.append($('<option></option>').attr('value', subtype).text(subtype));
+                    });
+                }
+
+                var description = graphDescriptions[graphType];
+                var subtypesAvailable = graphSubtypes[graphType].length ? ' Subtypes available: ' + graphSubtypes[graphType].join(', ') : ' No subtypes available.';
+                $('#message-content').text(description + subtypesAvailable);
+                $('#message-box').show();  
+
+                // Show/hide feature inputs based on selected graph type
+                handleFeatureVisibility(graphType);
+
+                
+            });
+
+            $('#close-message').click(function() {
+                $('#message-box').hide(); // Hide the message box when clicked
+            });
+
+            $('#graph_subtype').change(function() {
+                var graphType = $('#graph_type').val();
+                handleFeatureVisibility(graphType);
+            });
+
+            function handleFeatureVisibility(graphType) {
+                // Clear any previous visibility settings
+                $('#x_feature, #y_feature, #z_feature').hide(); // Hide initially
+                $('label[for=x_feature], label[for=y_feature], label[for=z_feature]').hide(); // Hide labels initially
+                
+                
+                switch (graphType) {
+                    case 'scatter':
+                    case 'line':
+                        $('#x_feature, #y_feature').show(); // Show both X and Y features
+                        $('label[for=x_feature], label[for=y_feature]').show(); // Show labels for both features
+                        break;
+                    case 'bar':
+                        $('#x_feature, #y_feature').show(); // Show both X and Y features
+                        $('label[for=x_feature], label[for=y_feature]').show(); // Show labels for both features
+                        if ($('#graph_subtype').val() === 'Grouped Bar' || $('#graph_subtype').val() === 'Stacked Bar') {
+                            $('#z_feature_label, #z_feature').show(); // Show Z feature for grouped bar
+                            $('label[for=z_feature]').show();
+                        }
+                        break;
+
+                    case 'histogram':
+                        $('#x_feature').show(); // Show Y feature only (as values)
+                        $('label[for=x_feature]').show(); // Show label for Y feature
+                        break;
+                    case 'errorbars':
+                        $('#x_feature,#y_feature').show();
+                        $('label[for=x_feature],label[for=y_feature]').show();
+                    case 'violin':
+                        $('#y_feature').show();
+                        $('label[for=y_feature]').show();
+                        
+                        break;
+                    case 'boxplot':
+                        $('#y_feature').show(); // Show Y feature
+                        $('label[for=y_feature]').show(); // Show label for Y feature
+
+                        if ($('#graph_subtype').val() === 'Grouped Box') {
+                            $('#x_feature_label, #x_feature').show(); // Show Z feature for grouping
+                            $('label[for=x_feature]').show();
+                        }
+                        break;
+                        case 'heatmap':
+                            $('#x_feature, #y_feature, #z_feature').show(); // Show all three features
+                            $('label[for=x_feature], label[for=y_feature], label[for=z_feature]').show();
+                            break;
+                    case 'pie':
+                        $('#y_feature').show(); // Show Y feature only (as values)
+                        $('label[for=y_feature]').show(); // Show label for Y feature
+                        break;
+                }
+            }
+
+
+            // Function to update the graph when the user clicks the update button
+            $('#update-button').click(function() {
+                var xFeature = $('#x_feature').val();
+                var yFeature = $('#y_feature').val();
+                var zFeature = $('#z_feature').val(); // Optional third feature
+                var graphType = $('#graph_type').val();
+                var graphSubtype = $('#graph_subtype').val();
+                var color = $('#color').val(); // Get color value
+                var markerSize = parseInt($('#marker_size').val()); // Get marker size value
+                var showGrid = $('#show_grid').val() === 'true'; // Get grid visibility as boolean
+
+                // Send the selected features and graph options to the /update_graph endpoint
+                $.ajax({
+                    url: '/update_graph',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        x_feature: xFeature,
+                        y_feature: yFeature,
+                        z_feature: zFeature,
+                        graph_type: graphType,
+                        graph_subtype: graphSubtype,
+                        color: color,
+                        marker_size: markerSize,
+                        show_grid: showGrid
+                    }),
+                    success: function(graphData) {
+                        console.log("Received graph data:", graphData);
+                        var data = [];
+                        var layout = {
+                            title: graphData.title,
+                            showlegend: false,
+                            xaxis: {
+                                title: xFeature,
+                                showgrid: showGrid
+                            },
+                            yaxis: {
+                                title: yFeature,
+                                showgrid: showGrid
+                            },
+                            barmode: graphType === 'bar' && graphSubtype === 'Grouped Bar' ? 'group' : 'stack'
+                        };
+
+                        // Handle different graph types
+                        if (graphType === 'scatter') {
+                            data.push({
+                                x: graphData.x,
+                                y: graphData.y,
+                                mode: (graphSubtype === 'Bubble Scatter' ? 'markers+text' : 'markers'),
+                                type: 'scatter',
+                                marker: {
+                                    size: markerSize,
+                                    color: color
+                                },
+                                text: graphSubtype === 'Bubble Scatter' ? graphData.y : null, // Example: Using Y values as text
+                                textposition: 'top center'
+                            });
+                        }
+                        else if (graphType === 'line') {
+                            let lineShape = 'linear'; // Default to linear for regular lines
+                            let dashType = 'solid';
+                            let lineWidth = 2;    // Default to solid lines
+                            
+                            if (graphSubtype === 'Smooth Line') {
+                                lineShape = 'spline'; // Use 'spline' for smooth lines
+                            }
+                            
+                            if (graphSubtype === 'Dashed Line') {
+                                dashType = 'dash';    // Use 'dash' for dashed lines
+                                lineWidth = 1;
+                            }
+                        
+                            data.push({
+                                x: graphData.x,
+                                y: graphData.y,
+                                mode: 'lines+markers',
+                                type: 'scatter',
+                                line: {
+                                    shape: lineShape,
+                                    dash: dashType,  // Apply dash for dashed line
+                                    color: color,
+                                    width: lineWidth
+                                },
+                                marker: {
+                                    size: markerSize
+                                }
+                            });
+                        }
+                        
+                        else if (graphType === 'bar') {
+                            if (graphSubtype === 'Grouped Bar') {
+                                let groupedData = graphData.grouped_data;
+                                let traces = [];
+                                let unique_z_values = [...new Set(groupedData.map(item => item[zFeature]))];
+            
+                                unique_z_values.forEach(function(z_value) {
+                                    let x_vals = groupedData.filter(item => item[zFeature] === z_value).map(item => item[xFeature]);
+                                    let y_vals = groupedData.filter(item => item[zFeature] === z_value).map(item => item[yFeature]);
+            
+                                    traces.push({
+                                        x: x_vals,
+                                        y: y_vals,
+                                        name: z_value,
+                                        type: 'bar'
+                                    });
+                                });
+            
+                                data = traces;
+                                layout.showlegend = true;
+                            }
+                            else if (graphSubtype === 'Stacked Bar') {
+                                let stackedData = graphData.stacked_data;
+                                let traces = [];
+                                for (let [z_value, values] of Object.entries(stackedData)) {
+                                    traces.push({
+                                        x: Object.keys(values), // X-axis values
+                                        y: Object.values(values), // Y-axis values
+                                        name: z_value,
+                                        type: 'bar'
+                                    });
+                                }
+                        
+                                data = traces; // Assign stacked traces to data
+                                layout.barmode = 'stack'; // Set bar mode to stack
+                                layout.showlegend = true; // Show legend for stacked bars
+                            }
+
+                            else if (graphSubtype === 'Horizontal Bar') {
+                                data.push({
+                                    x: graphData.x,
+                                    y: graphData.y,
+                                    type: 'bar',
+                                    orientation: 'h',
+                                    marker: {
+                                        color: color
+                                    },
+                                    name: yFeature
+                                });
+                            }
+                            else { // Stacked or other bar subtypes
+                                data.push({
+                                    x: graphData.x,
+                                    y: graphData.y,
+                                    type: 'bar',
+                                    marker: {
+                                        color: color,
+                                    },
+                                    name: yFeature,
+                                     // Use the width set in response_data
+                                });
+                            }
+                            
+                        }
+                        if (graphType === 'heatmap') {
+                            data.push({
+                                z: graphData.z, // 2D array for heatmap
+                                x: graphData.x, // Unique X values
+                                y: graphData.y, // Unique Y values
+                                type: 'heatmap',
+                                colorscale: 'Viridis', // Adjust colorscale if needed
+                                colorbar: {
+                                    title: zFeature, // Title for color bar
+                                    titleside: 'right', // Position of the title
+                                    tickvals: [], // Optional: You can set custom tick values if needed
+                                    ticktext: []  // Optional: Set custom tick labels if needed
+                                }
+                            });
+                            layout.showlegend = true;
+                        }
+
+                        if (graphType === 'histogram') {
+                            data.push({
+                                x: graphData.x,  // Ensure only X feature is selected
+                                type: 'histogram',
+                                marker: { color: color }
+                            });
+                            layout = { 
+                                title: graphData.title,
+                                xaxis: {
+                                    title: xFeature,  // Only X feature label
+                                    showgrid: showGrid
+                                },
+                                yaxis: {
+                                    title: '',  // No title for Y axis
+                                    showgrid: false // Optionally hide Y grid for cleaner look
+                                },
+                                showlegend: false  // Optionally hide legend for histogram
+                            };
+                        }
+
+
+                        else if (graphType === 'boxplot') {
+                            if (graphSubtype === 'Horizontal Box') {
+                                data.push({
+                                    x: graphData.y,
+                                    type: 'box',
+                                    marker: { color: color },
+                                    name: yFeature,
+                                    orientation: 'h'
+                                });
+                                layout = { 
+                                    title: graphData.title,
+                                    xaxis: {
+                                        title: '',  // Only X feature label
+                                        showgrid: showGrid
+                                    },
+                                    yaxis: {
+                                        title: '',  // No title for Y axis
+                                        showgrid: false // Optionally hide Y grid for cleaner look
+                                    },
+                                };
+                            }
+                            
+                            else if (graphSubtype === 'Grouped Box'){
+                                if (graphData.grouped_data) {
+                                    for (var group in graphData.grouped_data) {
+                                        data.push({
+                                            y: graphData.grouped_data[group],
+                                            type: 'box',
+                                            name: group,
+                                            marker: { color: color }
+                                        });
+                                    }
+                                }
+                                else {
+                                    data.push({
+                                        y: graphData.y,
+                                        type: 'box',
+                                        marker: { color: color },
+                                        name: yFeature
+                                    });
+                                }
+                            }
+
+                            else { // Vertical Box
+                                data.push({
+                                    y: graphData.y,
+                                    type: 'box',
+                                    marker: { color: color },
+                                    name: yFeature
+                                });
+                                layout = { 
+                                    title: graphData.title,
+                                    xaxis: {
+                                        title: '',  // Only X feature label
+                                        showgrid: false
+                                    },
+                                    yaxis: {
+                                        title: '',  // No title for Y axis
+                                        showgrid: showGrid // Optionally hide Y grid for cleaner look
+                                    },
+                                };
+                            }
+                        }
+                        
+                        else if (graphType === 'errorbars') {
+                            var trace = {
+                                x: graphData.x,
+                                y: graphData.y,
+                                type: 'scatter',
+                                mode: 'markers',
+                                marker: {
+                                    size: markerSize,
+                                    color: color
+                                }
+                            };
+
+                            if (graphSubtype === 'Error Bars X') {
+                                trace.error_x = {
+                                    type: 'data',
+                                    array: graphData.error_x,
+                                    visible: true
+                                };
+                            }
+                            else if (graphSubtype === 'Error Bars Y') {
+                                trace.error_y = {
+                                    type: 'data',
+                                    array: graphData.error_y,
+                                    visible: true
+                                };
+                            }
+
+                            data.push(trace);
+                        }
+                        if (graphType === 'pie') {
+                            data.push({
+                                values: graphData.values,
+                                labels: graphData.labels,
+                                type: 'pie',
+                                marker: {
+                                    colors: graphData.colors || ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', '#c2c2f0', '#ffb3e6'] // Distinct colors
+                                }
+                            });
+                            layout.showlegend = true;
+                        }
+                        else if (graphType === 'heatmap') {
+                            data.push({
+                                z: graphData.z, // 2D array of values for heatmap
+                                x: graphData.x, // X-axis labels
+                                y: graphData.y, // Y-axis labels
+                                type: 'heatmap',
+                                colorscale: 'Viridis',
+                                name: zFeature
+                            });
+                            
+                        }
+                        else if (graphType === 'violin') {
+                            if (graphData.grouped_data) {
+                                for (var group in graphData.grouped_data) {
+                                    data.push({
+                                        y: graphData.grouped_data[group],
+                                        type: 'violin',
+                                        name: group,
+                                        box: {
+                                            visible: true
+                                        },
+                                        line: {
+                                            color: color
+                                        },
+                                        meanline: {
+                                            visible: true
+                                        }
+                                    });
+                                }
+
+                            } else {
+                                data.push({
+                                    y: graphData.y,
+                                    type: 'violin',
+                                    name: yFeature,
+                                    box: {
+                                        visible: true
+                                    },
+                                    line: {
+                                        color: color
+                                    },
+                                    meanline: {
+                                        visible: true
+                                    }
+                                });
+                                
+                            }
+                            layout = { 
+                                title: graphData.title,
+                                xaxis: {
+                                    title: '',  // Only X feature label
+                                    showgrid: false
+                                },
+                                yaxis: {
+                                    title: yFeature,  // No title for Y axis
+                                    showgrid: showGrid // Optionally hide Y grid for cleaner look
+                                },
+                                showlegend: false  // Optionally hide legend for histogram
+                            };
+                        }
+
+
+                        // Set layout options for the graph
+                        
+
+                        // Update the graph with the new data and layout
+                        Plotly.newPlot('graph', data, layout);
+                        // Enable the submit button now that a graph has been created
+                        $('#submit-button').prop('disabled', false);
+                    },
+                    error: function(xhr) {
+                        var errorMsg = 'Failed to update graph.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMsg = xhr.responseJSON.message;
+                        }
+                        alert(errorMsg);
+                    }
+                });
+            });
+
+            // New logic for saving the graph when "Submit" button is clicked
+            $('#submit-button').click(function () {
+
+                 // Check if graph has been created before submitting
+                const graphHtml = document.getElementById('graph').innerHTML;
+
+                if (!graphHtml) {
+                    alert('No graph has been created! Please create a graph before submitting.');
+                    return; // Prevent submission if no graph is present
+                }
+                // Send the graph data to the backend
+                const graphData = { 
+                    x: $('#x_feature').val(),
+                    y: $('#y_feature').val(),
+                    z: $('#z_feature').val(),
+                    graph_type: $('#graph_type').val(),
+                    graph_subtype: $('#graph_subtype').val(),
+                    color: $('#color').val(),
+                    marker_size: $('#marker_size').val(),
+                    show_grid: $('#show_grid').val(),
+                    graph_html: document.getElementById('graph').innerHTML // Send graph as HTML or format of your choice
+                };
+
+                $.ajax({
+                    url: '/save_graph',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(graphData),
+                    success: function (response) {
+                        alert('Graph saved successfully!');
+                    },
+                    error: function (error) {
+                        alert('Error saving graph.');
+                    }
+                });
+            });
+   
+        });
+
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+
+</body>
+</html>

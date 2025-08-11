@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis Portal</title>
+    <style>
+        /* General Layout */
+        /* body {
+            font-family: Arial, sans-serif;
+            color: #f1f1f1;
+            background-color: #1e1e2f;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        } */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #e9ecef;
+            color: #333;
+        }
+        nav {
+
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 0px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            background-size: cover;
+            background-position: center;
+            border-bottom: 2px solid #c72092;
+                
+        }
+
+
+        nav .logo{
+            font-size: 15px;
+            color: #c72092;
+            margin: 0px 0;
+            cursor: pointer;
+            position: relative;
+            
+        }
+
+        nav .logo span{
+            color: #6c14d0;
+            text-decoration: underline;
+        }
+
+        nav ul {
+            margin-left: 250px;
+            list-style-type: none;
+            
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 5px 15px;
+        }
+
+        nav ul li a {
+            color: #333;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #c72092;
+        }
+
+        nav #profile {
+            display: flex;
+            align-items: center;
+            margin-left: auto; /* Pushes the profile section to the right */
+            padding: 10px; /* Adjust padding if needed */
+        }
+        nav #profile img {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        nav #profile h4 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100vh; 
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #2c2c3e;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: stretch; /* Ensure full-width buttons */
+        }
+
+        .sidebar h2 {
+            font-size: 1.6em;
+            color: #ffffff;
+            margin-bottom: 1em;
+            text-align: center; /* Centered heading */
+        }
+
+        .sidebar label {
+            color: #f1f1f1;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block; /* Block display for labels */
+        }
+
+        .sidebar select,
+        .sidebar button,
+        .sidebar input[type="text"],
+        .sidebar input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            color: #333;
+            background-color: #e1e1f2;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .sidebar button:hover,
+        .sidebar select:hover,
+        .sidebar input[type="text"]:hover,
+        .sidebar input[type="number"]:hover {
+            background-color: #c72092;
+            transform: scale(1.02); /* Slight scale effect on hover */
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #1e1e2f;
+            overflow-y: auto;
+        }
+
+        .main-content h1 {
+            font-size: 2.2em;
+            color: #ffffff;
+            margin-bottom: 0.5em;
+            text-align: center;
+            background: linear-gradient(to right, #c72092, #6c14d0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-content h2 {
+            font-size: 1.6em;
+            color: #e6e6e6;
+            text-align: left;
+            border-bottom: 1px solid #c72092;
+            padding-bottom: 5px;
+        }
+
+        /* Card-style container for Results */
+        .card {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .analysis-results h2 {
+            font-size: 1.6em;
+            color: #e6e6e6;
+            text-align: left;
+            border-bottom: 1px solid #c72092;
+            padding-bottom: 5px;
+        }
+
+        /* Styling for Descriptive Statistics Table */
+        .analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .analysis-table th,
+        .analysis-table td {
+            border: 1px solid #c72092; /* Border color matching your theme */
+            padding: 10px;
+            text-align: center;
+            color: #f1f1f1;
+            font-size: 1em;
+        }
+
+        .analysis-table th {
+            background-color: #2c2c3e;
+            font-weight: bold;
+        }
+
+        .analysis-table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.05); /* Subtle background for alternate rows */
+        }
+
+        pre {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1em;
+            color: #f1f1f1;
+            overflow-x: auto;
+        }
+
+        /* Style for visualizations */
+        .visualization {
+            width: 100%;
+            height: 400px; /* Adjust height as needed */
+            margin-top: 20px;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .dynamic-input {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <h1>Graph<span>s</span></h1>
+        </div>
+
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/plot">Visuals</a></li>
+            <li><a href="/upload">Data Entry</a></li>
+            <li><a href="/analysis">Analysis</a></li>
+            <li><a href="/generate_report">Report</a></li>
+        </ul>
+        <div id="profile">
+            <img src="https://via.placeholder.com/50" alt="User Profile">
+            {% if session['name'] %}
+            <p><strong>{{ session['name'] }}</strong></p>
+            {% else %}
+                <p>Welcome, Guest</p>
+            {% endif %}
+        </div>
+
+    </nav>
+    <div class="container">
+        <!-- Sidebar for Analysis Selection -->
+        <div class="sidebar">
+            <h2>Select Analysis</h2>
+            <!-- <form id="uploadForm" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".csv" required>
+                <button type="submit">Upload Data</button>
+            </form>
+            <div id="uploadMessage"></div> -->
+            
+            <label for="analysisSelect">Choose Analyses:</label>
+            <select id="analysisSelect" multiple onchange="showDynamicInputs()">
+                <option value="correlation_matrix">Correlation Matrix</option>
+                <option value="descriptive_statistics">Descriptive Statistics</option>
+                <option value="regression_analysis">Regression Analysis</option>
+                <option value="time_series_analysis">Time Series Analysis</option>
+                <option value="hypothesis_testing">Hypothesis Testing</option>
+                <option value="scatter_matrix">Scatter Matrix</option>
+                <option value="pca">PCA</option>
+            </select>
+
+            <!-- Container for dynamic input fields -->
+            <div id="dynamicInputs" class="dynamic-input"></div>
+
+            <button onclick="performAnalysis()">Perform Selected Analysis</button>
+
+            <button id="save-analysis-button">Save Analysis</button>
+        </div>
+
+        <!-- Main Content Area for Results and Visualizations -->
+        <div class="main-content">
+            <h1>Scientific Data Analysis Portal</h1>
+            <h2>Analysis Results</h2>
+            <div class="card analysis-results" id="analysisResults">
+                
+                <div id="resultOutput"></div>
+            </div>
+        </div>
+    </div>    
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $('#save-analysis-button').click(function () {
+            console.log("Save Analysis button clicked");
+
+            // Get the analysis type and ensure we're working with a string
+            const analysisSelect = $('#analysisSelect');
+            let analysisType = analysisSelect.val();
+            
+            // Convert array to string if necessary
+            if (Array.isArray(analysisType)) {
+                analysisType = analysisType[0];
+            }
+            
+            console.log("Analysis Type (on click):", analysisType);
+            console.log("Type of analysisType:", typeof analysisType);
+
+            const analysisHtml = document.getElementById('analysisResults').innerHTML;
+            const analysisImage = document.getElementById('resultOutput');
+
+            // If no analysis results, show an error
+            if (!analysisHtml && !(analysisImage && analysisImage.querySelector('canvas'))) {
+                alert('No analysis has been created! Please perform an analysis before saving.');
+                return;
+            }
+
+            // Prepare the analysis data object
+            const analysisData = {
+                analysis_type: analysisType,
+                analysis_subtype: $('#analysis_subtype').val(),
+                parameters: {
+                    param1: $('#param1').val(),
+                    param2: $('#param2').val(),
+                },
+            };
+
+            if (analysisType === 'descriptive_statistics') {
+                console.log("Descriptive Analysis Performed");
+                // Only descriptive statistics should be HTML
+                analysisData.analysis_html = analysisHtml;
+                sendAnalysisDataToServer(analysisData);
+            } else {
+                console.log("Other Analysis Performed");
+                // Convert to image for all non-descriptive statistics analyses
+                Plotly.toImage('resultOutput', { format: 'png', width: 800, height: 600 })
+                    .then(function(imageDataUrl) {
+                        analysisData.analysis_image = imageDataUrl;
+                        sendAnalysisDataToServer(analysisData);
+                    })
+                    .catch(function(error) {
+                        console.error("Error capturing the plot image:", error);
+                        alert("Failed to capture the plot image.");
+                    });
+            }
+        });
+
+        function sendAnalysisDataToServer(analysisData) {
+            $.ajax({
+                url: '/save_analysis',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(analysisData),
+                success: function (response) {
+                    alert('Analysis saved successfully!');
+                },
+                error: function (error) {
+                    console.log("Error:", error);
+                    alert('Error saving analysis.');
+                }
+            });
+        }
+
+
+
+
+        // Upload form handler
+        document.getElementById('uploadForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const response = await fetch('/upload', { method: 'POST', body: formData });
+            const result = await response.json();
+            document.getElementById('uploadMessage').textContent = result.message;
+        };
+
+        async function performAnalysis() {
+            const selectedOptions = Array.from(document.getElementById('analysisSelect').selectedOptions).map(opt => opt.value);
+            const resultsContainer = document.getElementById('resultOutput');
+            resultsContainer.innerHTML = '';  // Clear previous results
+
+            for (const option of selectedOptions) {
+                let response;
+                let data;
+                const payload = {};  // Prepare a payload object for each analysis type
+
+                if (option === 'correlation_matrix') {
+                    response = await fetch(`/${option}`);
+                    const heatmapData = await response.json();
+                    Plotly.newPlot('resultOutput', JSON.parse(heatmapData).data, JSON.parse(heatmapData).layout);
+                } else if (option === 'descriptive_statistics') {
+                    response = await fetch(`/${option}`);
+                    const { table } = await response.json();
+                    const tableContainer = document.createElement('div');
+                    tableContainer.classList.add('result-box');
+                    tableContainer.innerHTML = `<h3>Descriptive Statistics</h3>${table}`;
+                    resultsContainer.appendChild(tableContainer);
+                } else if (option === 'regression_analysis') {
+                    const independentVars = document.getElementById('independentVars').value.split(',').map(v => v.trim());
+                    const dependentVar = document.getElementById('dependentVar').value;
+
+                    const payload = {
+                        independent_vars: independentVars,
+                        dependent_var: dependentVar
+                    };
+
+                    const response = await fetch('/regression_analysis', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    // Plot regression graph directly without displaying the table
+                    const traceOriginal = {
+                        x: data.original_x,
+                        y: data.original_y,
+                        mode: 'markers',
+                        type: 'scatter',
+                        name: 'Original Data',
+                        marker: { color: '#1f77b4' }
+                    };
+
+                    const traceRegression = {
+                        x: data.original_x,
+                        y: data.predicted_y,
+                        mode: 'lines',
+                        type: 'scatter',
+                        name: 'Regression Line',
+                        line: { color: '#ff7f0e' }
+                    };
+
+                    Plotly.newPlot('resultOutput', [traceOriginal, traceRegression], {
+                        title: 'Regression Analysis',
+                        xaxis: { title: independentVars[0] },
+                        yaxis: { title: dependentVar },
+                        showlegend: true,
+                        width: 800,  // Match the figure size
+                        height: 600  // Match the figure size
+                    });
+                } else if (option === 'time_series_analysis') {
+                    payload.time_series_col = document.getElementById('timeSeriesCol').value;
+                    response = await fetch(`/${option}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    data = await response.json();
+                    const tsContainer = document.createElement('div');
+                    tsContainer.classList.add('result-box');
+                    tsContainer.innerHTML = `
+                        <h3>Time Series Analysis</h3>
+                        <table class="analysis-table">
+                            ${Object.entries(data).map(([key, value]) => `<tr><th>${key}</th><td>${value}</td></tr>`).join('')}
+                        </table>`;
+                    resultsContainer.appendChild(tsContainer);
+                } else if (option === 'hypothesis_testing') {
+                    payload.sample_col = document.getElementById('sampleCol').value;
+                    payload.population_mean = parseFloat(document.getElementById('populationMean').value);
+                    response = await fetch(`/${option}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    data = await response.json();
+                    const htContainer = document.createElement('div');
+                    htContainer.classList.add('result-box');
+                    htContainer.innerHTML = `
+                        <h3>Hypothesis Testing Results</h3>
+                        <table class="analysis-table">
+                            <tr><th>t-Statistic</th><td>${data.t_statistic}</td></tr>
+                            <tr><th>p-Value</th><td>${data.p_value}</td></tr>
+                        </table>`;
+                    resultsContainer.appendChild(htContainer);
+                }else if (option === 'pca') {
+                    const numComponents = parseInt(document.getElementById('numComponents').value);
+                    const colorColumn = document.getElementById('colorColumn').value;
+
+                    const pcaPayload = { num_components: numComponents, color_column: colorColumn };
+
+                    try {
+                        const response = await fetch(`/${option}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(pcaPayload)
+                        });
+
+                        if (!response.ok) throw new Error("Failed to fetch data");
+
+                        const pcaData = await response.json();
+                        console.log("PCA Data:", pcaData);
+
+                        // Parse the `graph` JSON string if it is serialized
+                        const graphData = JSON.parse(pcaData.graph);  // Adjust this line if needed
+
+                        // Check if `graphData` contains the expected format for Plotly
+                        Plotly.newPlot('resultOutput', graphData.data, graphData.layout);
+                    } catch (error) {
+                        console.error("Error in PCA plot:", error);
+                        alert("An error occurred while loading the PCA data.");
+                    }
+                }if (option === 'scatter_matrix') { // Handle scatter matrix analysis
+                    response = await fetch(`/${option}`);
+                    const scatterMatrixData = await response.json();
+                    if (scatterMatrixData.error) {
+                        alert(scatterMatrixData.error);
+                        return;
+                    }
+                    // Plot the scatter matrix
+                    Plotly.newPlot('resultOutput', JSON.parse(scatterMatrixData).data, JSON.parse(scatterMatrixData).layout);
+                }
+
+            }
+        }
+
+        
+    </script>
+</body>
+</html>
+
+

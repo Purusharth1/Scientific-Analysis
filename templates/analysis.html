@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis Portal</title>
+    <style>
+        /* General Layout */
+        /* body {
+            font-family: Arial, sans-serif;
+            color: #f1f1f1;
+            background-color: #1e1e2f;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        } */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #e9ecef;
+            color: #333;
+        }
+        nav {
+
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 0px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            background-size: cover;
+            background-position: center;
+            border-bottom: 2px solid #c72092;
+                
+        }
+
+
+        nav .logo{
+            font-size: 15px;
+            color: #c72092;
+            margin: 0px 0;
+            cursor: pointer;
+            position: relative;
+            
+        }
+
+        nav .logo span{
+            color: #6c14d0;
+            text-decoration: underline;
+        }
+
+        nav ul {
+            margin-left: 250px;
+            list-style-type: none;
+            
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 5px 15px;
+        }
+
+        nav ul li a {
+            color: #333;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #c72092;
+        }
+
+        nav #profile {
+            display: flex;
+            align-items: center;
+            margin-left: auto; /* Pushes the profile section to the right */
+            padding: 10px; /* Adjust padding if needed */
+        }
+        nav #profile img {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        nav #profile h4 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100vh; 
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #2c2c3e;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: stretch; /* Ensure full-width buttons */
+        }
+
+        .sidebar h2 {
+            font-size: 1.6em;
+            color: #ffffff;
+            margin-bottom: 1em;
+            text-align: center; /* Centered heading */
+        }
+
+        .sidebar label {
+            color: #f1f1f1;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block; /* Block display for labels */
+        }
+
+        .sidebar select,
+        .sidebar button,
+        .sidebar input[type="text"],
+        .sidebar input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            color: #333;
+            background-color: #e1e1f2;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .sidebar button:hover,
+        .sidebar select:hover,
+        .sidebar input[type="text"]:hover,
+        .sidebar input[type="number"]:hover {
+            background-color: #c72092;
+            transform: scale(1.02); /* Slight scale effect on hover */
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #1e1e2f;
+            overflow-y: auto;
+        }
+
+        .main-content h1 {
+            font-size: 2.2em;
+            color: #ffffff;
+            margin-bottom: 0.5em;
+            text-align: center;
+            background: linear-gradient(to right, #c72092, #6c14d0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-content h2 {
+            font-size: 1.6em;
+            color: #e6e6e6;
+            text-align: left;
+            border-bottom: 1px solid #c72092;
+            padding-bottom: 5px;
+        }
+
+        /* Card-style container for Results */
+        .card {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .analysis-results h2 {
+            font-size: 1.6em;
+            color: #e6e6e6;
+            text-align: left;
+            border-bottom: 1px solid #c72092;
+            padding-bottom: 5px;
+        }
+        .analysis-results h3 {
+            display: block;  /* Ensures the h3 is displayed */
+            color: #e6e6e6;     /* Optional: Set text color */
+            font-size: 1.5em;
+        }
+
+        /* Styling for Descriptive Statistics Table */
+        .analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .analysis-table th,
+        .analysis-table td {
+            border: 1px solid #c72092; /* Border color matching your theme */
+            padding: 10px;
+            text-align: center;
+            color: #f1f1f1;
+            font-size: 1em;
+        }
+
+        .analysis-table th {
+            background-color: #2c2c3e;
+            font-weight: bold;
+        }
+
+        .analysis-table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.05); /* Subtle background for alternate rows */
+        }
+
+        pre {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1em;
+            color: #f1f1f1;
+            overflow-x: auto;
+        }
+
+        /* Style for visualizations */
+        .visualization {
+            width: 100%;
+            height: 400px; /* Adjust height as needed */
+            margin-top: 20px;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .dynamic-input {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <h1>Graph<span>s</span></h1>
+        </div>
+
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/plot">Visuals</a></li>
+            <li><a href="/upload">Data Entry</a></li>
+            <li><a href="/analysis">Analysis</a></li>
+            <li><a href="/generate_report">Report</a></li>
+        </ul>
+        <div id="profile">
+            <img src="https://via.placeholder.com/50" alt="User Profile">
+            {% if session['name'] %}
+            <p><strong>{{ session['name'] }}</strong></p>
+            {% else %}
+                <p>Welcome, Guest</p>
+            {% endif %}
+        </div>
+
+    </nav>
+    <div class="container">
+        <!-- Sidebar for Analysis Selection -->
+        <div class="sidebar">
+            <h2>Select Analysis</h2>
+            <label for="analysisSelect">Choose Analyses:</label>
+            <select id="analysisSelect" multiple onchange="showDynamicInputs()">
+                <option value="correlation_matrix">Correlation Matrix</option>
+                <option value="descriptive_statistics">Descriptive Statistics</option>
+                <option value="regression_analysis">Regression Analysis</option>
+                <option value="time_series_analysis">Time Series Analysis</option>
+                <option value="hypothesis_testing">Hypothesis Testing</option>
+                <option value="scatter_matrix">Scatter Matrix</option>
+                <option value="pca">PCA</option>
+            </select>
+    
+            <!-- Dynamic Inputs Container -->
+            <div id="dynamicInputs" class="dynamic-input">
+                <div id="pcaInputs" style="display: none;">
+                    <label for="numComponents">Number of Components:</label>
+                    <input type="range" id="numComponents" name="numComponents" min="1" max="10" value="2" oninput="updateSliderValue()">
+                    <span id="sliderValue">2</span>
+                    <label for="colorColumn">Color Column:</label>
+                    <input type="text" id="colorColumn" name="colorColumn" placeholder="Column for coloring">
+                </div>
+            </div>
+    
+            <button onclick="performAnalysis()">Perform Selected Analysis</button>
+            <button id="save-analysis-button">Save Analysis</button>
+        </div>
+    
+        <!-- Main Content Area for Results and Visualizations -->
+        <div class="main-content">
+            <h1>Scientific Data Analysis Portal</h1>
+            <h2>Analysis Results</h2>
+            <div class="card analysis-results" id="analysisResults">
+                <div id="resultOutput"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let features = [];
+    
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchFeatures();
+        });
+    
+        async function fetchFeatures() {
+            try {
+                const response = await fetch('/get_features');
+                features = await response.json();
+                console.log('Features fetched:', features);
+                // After fetching features, update dynamic inputs
+                showDynamicInputs();
+            } catch (error) {
+                console.error('Error fetching features:', error);
+            }
+        }
+    
+        function updateSliderValue() {
+            document.getElementById('sliderValue').innerText = document.getElementById('numComponents').value;
+        }
+    
+        $('#save-analysis-button').click(function () {
+            const analysisSelect = $('#analysisSelect');
+            let analysisType = analysisSelect.val();
+            if (Array.isArray(analysisType)) {
+                analysisType = analysisType[0];
+            }
+
+            const analysisHtml = document.getElementById('analysisResults').innerHTML;
+            const analysisImage = document.getElementById('resultOutput');
+
+            if (!analysisHtml && !(analysisImage && analysisImage.querySelector('canvas'))) {
+                alert('No analysis has been created! Please perform an analysis before saving.');
+                return;
+            }
+
+            const analysisData = {
+                analysis_type: analysisType,
+                analysis_subtype: $('#analysis_subtype').val(),
+                parameters: {
+                    param1: $('#param1').val(),
+                    param2: $('#param2').val(),
+                },
+            };
+
+            if (analysisType === 'descriptive_statistics' || analysisType === 'hypothesis_testing') {
+                analysisData.analysis_html = analysisHtml;
+                sendAnalysisDataToServer(analysisData);
+            } else {
+                // Ensure the plot has been fully rendered before capturing
+                if (analysisType === 'time_series_analysis') {
+                    // For time series analysis, we will find the div with the save image flag
+                    const plotDiv = document.querySelector('#resultOutput div[data-save-image="true"]');
+                    if (plotDiv) {
+                        setTimeout(() => {
+                            Plotly.toImage(plotDiv, { format: 'png', width: 800, height: 600 })
+                                .then(function(imageDataUrl) {
+                                    analysisData.analysis_image = imageDataUrl;
+                                    sendAnalysisDataToServer(analysisData);
+                                })
+                                .catch(function(error) {
+                                    console.error("Error capturing the plot image:", error);
+                                    alert("Failed to capture the plot image.");
+                                });
+                        }, 500);
+                    }
+                } else {
+                    Plotly.toImage('resultOutput', { format: 'png', width: 800, height: 600 })
+                    .then(function(imageDataUrl) {
+                        analysisData.analysis_image = imageDataUrl;
+                        sendAnalysisDataToServer(analysisData);
+                    })
+                    .catch(function(error) {
+                        console.error("Error capturing the plot image:", error);
+                        alert("Failed to capture the plot image.");
+                    });
+                }
+            }
+        });
+
+
+        function sendAnalysisDataToServer(analysisData) {
+            $.ajax({
+                url: '/save_analysis',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(analysisData),
+                success: function (response) {
+                    alert('Analysis saved successfully!');
+                },
+                error: function (error) {
+                    console.log("Error:", error);
+                    alert('Error saving analysis.');
+                }
+            });
+        }
+
+    
+        async function performAnalysis() {
+            const selectedOptions = Array.from(document.getElementById('analysisSelect').selectedOptions).map(opt => opt.value);
+            const resultsContainer = document.getElementById('resultOutput');
+            resultsContainer.innerHTML = '';
+    
+            for (const option of selectedOptions) {
+                let response;
+                let data;
+                const payload = {};
+    
+                if (option === 'correlation_matrix') {
+                    response = await fetch(`/${option}`);
+                    const heatmapData = await response.json();
+                    Plotly.newPlot('resultOutput', JSON.parse(heatmapData).data, JSON.parse(heatmapData).layout);
+                } else if (option === 'descriptive_statistics') {
+                    response = await fetch(`/${option}`);
+                    const { table } = await response.json();
+                    const tableContainer = document.createElement('div');
+                    tableContainer.classList.add('result-box');
+                    tableContainer.innerHTML = `<h3>Descriptive Statistics</h3>${table}`;
+                    resultsContainer.appendChild(tableContainer);
+                } else if (option === 'regression_analysis') {
+                    const independentVars = document.getElementById('independentVars').value.split(',').map(v => v.trim());
+                    const dependentVar = document.getElementById('dependentVar').value;
+
+                    const payload = {
+                        independent_vars: independentVars,
+                        dependent_var: dependentVar
+                    };
+
+                    const response = await fetch('/regression_analysis', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    const traceOriginal = {
+                        x: data.original_x,
+                        y: data.original_y,
+                        mode: 'markers',
+                        type: 'scatter',
+                        name: 'Original Data',
+                        marker: { color: '#1f77b4' }
+                    };
+
+                    const traceRegression = {
+                        x: data.line_x,  // Use the sorted x values for the line
+                        y: data.line_y,  // Use the corresponding predicted y values
+                        mode: 'lines',
+                        type: 'scatter',
+                        name: 'Regression Line',
+                        line: { color: '#ff7f0e' }
+                    };
+
+                    Plotly.newPlot('resultOutput', [traceOriginal, traceRegression], {
+                        title: 'Regression Analysis',
+                        xaxis: { title: independentVars[0] },
+                        yaxis: { title: dependentVar },
+                        showlegend: true,
+                        width: 800,
+                        height: 600
+                    });
+
+                } else if (option === 'time_series_analysis') {
+                    try {
+                        payload.time_series_col = document.getElementById('timeSeriesCol').value;
+                        payload.other_features = Array.from(document.getElementById('otherFeatures').selectedOptions).map(option => option.value);
+                        
+                        const response = await fetch(`/${option}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        const data = await response.json();
+                        console.log("Response data:", data);
+                        
+                        if (data.error) {
+                            alert(data.error);
+                            return;
+                        }
+                        
+                        const tsContainer = document.createElement('div');
+                        tsContainer.classList.add('result-box');
+                        tsContainer.innerHTML = '<h3>Time Series Analysis</h3>';
+                        
+                        // Loop through each plot and render it
+                        Object.entries(data.plots).forEach(([feature, plotData]) => {
+                            console.log(`Plot data for ${feature}:`, plotData);
+                            
+                            // Create a div for each plot with specific dimensions
+                            const plotDiv = document.createElement('div');
+                            plotDiv.id = `${feature}-plot`;
+                            plotDiv.style.height = '400px';
+                            plotDiv.style.width = '100%';
+                            plotDiv.style.marginBottom = '20px';
+                            tsContainer.appendChild(plotDiv);
+                            
+                            // Create a loading indicator
+                            plotDiv.innerHTML = '<div style="text-align: center; padding: 20px;">Loading plot...</div>';
+                            
+                            // Render the plot using Plotly
+                            Plotly.newPlot(
+                                plotDiv, 
+                                plotData.data, 
+                                {
+                                    ...plotData.layout,
+                                    height: 400,
+                                    margin: { l: 60, r: 40, t: 40, b: 60 }
+                                },
+                                {
+                                    responsive: true,
+                                    displayModeBar: true,
+                                    displaylogo: false,
+                                    modeBarButtonsToRemove: ['lasso2d', 'select2d']
+                                }
+                            );
+
+                            // Store the plot div for later image capture
+                            plotDiv.dataset.saveImage = true;
+                        });
+
+                        resultsContainer.appendChild(tsContainer);
+                    } catch (error) {
+                        console.error('Error in time series analysis:', error);
+                        const errorDiv = document.createElement('div');
+                        errorDiv.classList.add('result-box', 'error');
+                        errorDiv.innerHTML = `
+                            <h3>Error in Time Series Analysis</h3>
+                            <p>An error occurred while generating the time series plots. Please check your data and try again.</p>
+                        `;
+                        resultsContainer.appendChild(errorDiv);
+                    }
+
+
+                } else if (option === 'hypothesis_testing') {
+                    payload.sample_col = document.getElementById('sampleCol').value;
+                    payload.population_mean = parseFloat(document.getElementById('populationMean').value);
+                    response = await fetch(`/${option}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    data = await response.json();
+                    const htContainer = document.createElement('div');
+                    htContainer.classList.add('result-box');
+                    htContainer.innerHTML = `
+                        <h3>Hypothesis Testing Results</h3> <!-- New heading added -->
+                        <table class="analysis-table">
+                            <tr><th>Null Hypothesis</th><td>${data.null_hypothesis}</td></tr>
+                            <tr><th>Alternative Hypothesis</th><td>${data.alternative_hypothesis}</td></tr>
+                            <tr><th>T-Statistic</th><td>${data.t_statistic}</td></tr>
+                            <tr><th>P-Value</th><td>${data.p_value}</td></tr>
+                            <tr><th>Reject Null Hypothesis</th><td>${data.reject_null ? 'Yes' : 'No'}</td></tr>
+                        </table>`;
+                    resultsContainer.appendChild(htContainer);
+
+                } else if (option === 'pca') {
+                    const numComponents = parseInt(document.getElementById('numComponents').value);
+                    const colorColumn = document.getElementById('colorColumn').value;
+    
+                    const pcaPayload = { num_components: numComponents, color_column: colorColumn };
+    
+                    try {
+                        const response = await fetch(`/${option}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(pcaPayload)
+                        });
+    
+                        if (!response.ok) throw new Error("Failed to fetch data");
+    
+                        const pcaData = await response.json();
+                        const graphData = JSON.parse(pcaData.graph);
+    
+                        Plotly.newPlot('resultOutput', graphData.data, graphData.layout);
+                    } catch (error) {
+                        console.error("Error in fetching PCA data:", error);
+                        alert("An error occurred while fetching PCA data.");
+                    }
+                } else if (option === 'scatter_matrix') { // Handle scatter matrix analysis
+                    response = await fetch(`/${option}`);
+                    const scatterMatrixData = await response.json();
+                    if (scatterMatrixData.error) {
+                        alert(scatterMatrixData.error);
+                        return;
+                    }
+                    // Plot the scatter matrix
+                    Plotly.newPlot('resultOutput', JSON.parse(scatterMatrixData).data, JSON.parse(scatterMatrixData).layout);
+                } else {
+                    const response = await fetch(`/${option}`);
+                    const analysisData = await response.json();
+                    const resultBox = document.createElement('div');
+                    resultBox.classList.add('result-box');
+                    resultBox.innerHTML = `<h3>${option.replace(/_/g, ' ')}</h3><pre>${JSON.stringify(analysisData, null, 2)}</pre>`;
+                    resultsContainer.appendChild(resultBox);
+                }
+            }
+        }
+            
+    
+        function showDynamicInputs() {
+            const analysisSelect = document.getElementById('analysisSelect');
+            const selectedOptions = Array.from(analysisSelect.selectedOptions).map(option => option.value);
+            const dynamicInputs = document.getElementById('dynamicInputs');
+            dynamicInputs.innerHTML = ''; // Clear previous inputs
+
+            selectedOptions.forEach(option => {
+                if (option === 'regression_analysis') {
+                    // Heading for independent and dependent variables
+                    const independentLabel = document.createElement('label');
+                    independentLabel.textContent = 'Select Independent Variables';
+                    dynamicInputs.appendChild(independentLabel);
+
+                    const independentVarsInput = document.createElement('select');
+                    independentVarsInput.id = 'independentVars';
+                    independentVarsInput.placeholder = 'Select independent variables';
+                    // independentVarsInput.multiple = true; // Allow multiple selections
+
+                    // Populate the independent variables dropdown with the available features
+                    features.forEach(feature => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = feature;
+                        optionElement.textContent = feature;
+                        independentVarsInput.appendChild(optionElement);
+                    });
+                    dynamicInputs.appendChild(independentVarsInput);
+
+                    // Heading for dependent variable
+                    const dependentLabel = document.createElement('label');
+                    dependentLabel.textContent = 'Select Dependent Variable';
+                    dynamicInputs.appendChild(dependentLabel);
+
+                    const dependentVarInput = document.createElement('select');
+                    dependentVarInput.id = 'dependentVar';
+                    dependentVarInput.placeholder = 'Select dependent variable';
+
+                    // Populate the dependent variable dropdown with the available features
+                    features.forEach(feature => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = feature;
+                        optionElement.textContent = feature;
+                        dependentVarInput.appendChild(optionElement);
+                    });
+                    dynamicInputs.appendChild(dependentVarInput);
+
+                } else if (option === 'time_series_analysis') {
+                    // Heading and dropdown for time series column
+                    const timeSeriesLabel = document.createElement('label');
+                    timeSeriesLabel.textContent = 'Select Time Series Column';
+                    dynamicInputs.appendChild(timeSeriesLabel);
+
+                    const timeSeriesColInput = document.createElement('select');
+                    timeSeriesColInput.id = 'timeSeriesCol';
+                    timeSeriesColInput.placeholder = 'Select time series column';
+
+                    features.forEach(feature => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = feature;
+                        optionElement.textContent = feature;
+                        timeSeriesColInput.appendChild(optionElement);
+                    });
+                    dynamicInputs.appendChild(timeSeriesColInput);
+
+                    // Heading and dropdown for other features
+                    const otherFeaturesLabel = document.createElement('label');
+                    otherFeaturesLabel.textContent = 'Select Other Features';
+                    dynamicInputs.appendChild(otherFeaturesLabel);
+
+                    const otherFeaturesInput = document.createElement('select');
+                    otherFeaturesInput.id = 'otherFeatures';
+
+                    features.forEach(feature => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = feature;
+                        optionElement.textContent = feature;
+                        otherFeaturesInput.appendChild(optionElement);
+                    });
+                    dynamicInputs.appendChild(otherFeaturesInput);
+                }
+
+
+                else if (option === 'hypothesis_testing') {
+                    // Heading and dropdown for sample and population mean
+                    const sampleColLabel = document.createElement('label');
+                    sampleColLabel.textContent = 'Select Sample Column';
+                    dynamicInputs.appendChild(sampleColLabel);
+
+                    const sampleColInput = document.createElement('select');
+                    sampleColInput.id = 'sampleCol';
+                    sampleColInput.placeholder = 'Select sample column';
+
+                    features.forEach(feature => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = feature;
+                        optionElement.textContent = feature;
+                        sampleColInput.appendChild(optionElement);
+                    });
+                    dynamicInputs.appendChild(sampleColInput);
+
+                    const populationMeanLabel = document.createElement('label');
+                    populationMeanLabel.textContent = 'Enter Population Mean';
+                    dynamicInputs.appendChild(populationMeanLabel);
+
+                    const populationMeanInput = document.createElement('input');
+                    populationMeanInput.type = 'number';
+                    populationMeanInput.id = 'populationMean';
+                    populationMeanInput.placeholder = 'Enter population mean';
+                    dynamicInputs.appendChild(populationMeanInput);
+
+                } else if (option === 'pca') {
+                    // Ensure the PCA section appears
+                    const pcaLabel = document.createElement('label');
+                    pcaLabel.textContent = 'Select Number of PCA Components';
+                    dynamicInputs.appendChild(pcaLabel);
+
+                    const pcaInput = document.createElement('select');
+                    pcaInput.id = 'numComponents';
+                    pcaInput.innerHTML = `
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    `;
+                    dynamicInputs.appendChild(pcaInput);
+
+                    // Add Color Column input for PCA (dropdown to select a feature)
+                    const colorLabel = document.createElement('label');
+                    colorLabel.textContent = 'Select Color Column:';
+                    dynamicInputs.appendChild(colorLabel);
+
+                    const colorColumnInput = document.createElement('select');
+                    colorColumnInput.id = 'colorColumn';
+
+                    // Populate the color column dropdown with the available features
+                    features.forEach(feature => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = feature;
+                        optionElement.textContent = feature;
+                        colorColumnInput.appendChild(optionElement);
+                    });
+                    
+                    dynamicInputs.appendChild(colorColumnInput);
+                }
+            });
+        }
+    </script>
+    
+    
+</body>
+</html>
+
+

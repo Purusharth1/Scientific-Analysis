@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 15px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin: 10px 0 15px;
+            padding: 0;
+        }
+        h2 {
+            color: #4CAF50;
+            margin: 15px 0 10px;
+            padding: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            padding: 8px 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .image-analysis {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            margin: 0;
+            padding: 0;
+        }
+        .image-analysis img {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            display: block;
+            margin: 5px 0;
+        }
+        .html-analysis {
+            background-color: #fafafa;
+            padding: 8px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            break-inside: avoid;
+            page-break-inside: avoid;
+            margin: 5px 0;
+        }
+        .html-analysis div {
+            overflow-wrap: break-word;
+            margin: 0;
+        }
+        .description-section {
+            margin: 5px 0;
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .description-section:hover {
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            background-color: #e9f7ec;
+        }
+        .description-section textarea {
+            width: 100%;
+            height: 100px;
+            padding: 8px;
+            font-size: 14px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            resize: vertical;
+            outline: none;
+            margin: 5px 0;
+        }
+        .description-section textarea:focus {
+            border-color: #4CAF50;
+            background-color: #f0f8f0;
+        }
+        .description-section label {
+            font-size: 14px;
+            color: #555;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+        .download-btn {
+            display: block;
+            width: 200px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            margin: 20px auto;
+        }
+        .download-btn:hover {
+            background-color: #45a049;
+        }
+        .analysis-item {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        /* Optimize table cell widths */
+        table td:first-child {
+            width: 40%;
+        }
+        table td:last-child {
+            width: 60%;
+        }
+        /* Remove extra spaces between sections */
+        #reportContent > * {
+            margin-bottom: 15px;
+        }
+        /* Compact spacing for consecutive elements */
+        .description-section + .description-section,
+        .html-analysis + .html-analysis,
+        .image-analysis + .image-analysis {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generated Report</h1>
+
+    <div id="reportContent">
+        <h2>Graphs</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Graph</th>
+                    <th>Visualization</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for graph in graphs %}
+                    <tr class="analysis-item">
+                        <td>
+                            <div class="description-section">
+                                <label for="graphDescription-{{ loop.index }}">Graph Description</label>
+                                <textarea id="graphDescription-{{ loop.index }}" placeholder="Write your description about this graph...">{{ graph.description | default('No description provided') }}</textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <img src="{{ graph.graph_path }}" alt="Graph Image" style="max-width: 100%; width: 800px; height: auto;">
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Analyses</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Analysis</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for analysis in analyses %}
+                    <tr class="analysis-item">
+                        <td>
+                            <div class="description-section">
+                                <label for="analysisDescription-{{ loop.index }}">Analysis Description</label>
+                                <textarea id="analysisDescription-{{ loop.index }}" placeholder="Write your description about this analysis...">{{ analysis.description | default('No description provided') }}</textarea>
+                            </div>
+                        </td>
+                        <td>
+                            {% if analysis.html_content %}
+                                <div class="html-analysis">
+                                    <div>{{ analysis.html_content|safe }}</div>
+                                </div>
+                            {% endif %}
+                            {% if analysis.image_path %}
+                                <div class="image-analysis">
+                                    <img src="{{ analysis.image_path }}" alt="Analysis Image" style="max-width: 100%; width: 800px; height: auto;">
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <button class="download-btn" id="downloadReportBtn">Download Report as PDF</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+    <script>
+        document.getElementById('downloadReportBtn').addEventListener('click', function () {
+            const element = document.getElementById('reportContent');
+            
+            const opt = {
+                margin: [5, 10], // Reduced margins [top/bottom, left/right]
+                filename: 'analysis_report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    dpi: 192, 
+                    scale: 2,
+                    letterRendering: true,
+                    useCORS: true
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a3', // Changed to A4 for better space usage
+                    orientation: 'portrait',
+                    compress: true
+                }
+            };
+
+            html2pdf().from(element).set(opt).save();
+        });
+    </script>
+</body>
+</html>
